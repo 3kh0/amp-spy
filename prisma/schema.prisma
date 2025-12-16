@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model BalanceLog {
+  id        Int      @id @default(autoincrement())
+  balance   Float
+  timestamp DateTime @default(now())
+  
+  @@index([timestamp])
+}
