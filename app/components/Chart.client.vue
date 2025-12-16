@@ -16,11 +16,15 @@ const legendEl = ref<HTMLElement | null>(null);
 let chart: IChartApi | null = null;
 let lineSeries: ISeriesApi<"Line"> | null = null;
 
-const { data, refresh: fetchRefresh } =
-  useFetch<LineData<Time>[]>("/api/balance");
+const props = defineProps<{
+  data: LineData<Time>[];
+}>();
+
+const data = computed(() => props.data);
 
 async function refresh() {
-  await fetchRefresh();
+  const { data } = await useFetch<LineData<Time>[]>("/api/balance");
+  data.value = data;
 }
 
 function fp(price: number): string {

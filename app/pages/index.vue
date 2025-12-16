@@ -1,10 +1,14 @@
+<script setup lang="ts">
+const { data } = await useFetch<LineData<Time>[]>("/api/balance");
+</script>
+
 <template>
   <div class="x">
     <header>
       <h1>HQ Amp account balance</h1>
     </header>
     <main>
-      <Chart ref="chartRef" />
+      <Chart ref="chartRef" :data="data || []" />
     </main>
   </div>
 </template>
