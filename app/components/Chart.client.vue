@@ -28,13 +28,21 @@ function fillTimeGaps(data: LineData<Time>[]): (LineData<Time> | WhitespaceData<
 
   const result: (LineData<Time> | WhitespaceData<Time>)[] = [];
   const sorted = [...data].sort((a, b) => (a.time as number) - (b.time as number));
-
-  for (let i = 0; i < sorted.length; i++) {
+  
+  const deduped: LineData<Time>[] = [];
+  for (let i = sorted.length - 1; i >= 0; i--) {
     const current = sorted[i];
+    if (!deduped.some(d => d.time === current.time)) {
+      deduped.unshift(current);
+    }
+  }
+
+  for (let i = 0; i < deduped.length; i++) {
+    const current = deduped[i];
     result.push(current);
 
-    if (i < sorted.length - 1) {
-      const next = sorted[i + 1];
+    if (i < deduped.length - 1) {
+      const next = deduped[i + 1];
       const currentTime = current.time as number;
       const nextTime = next.time as number;
       const gap = nextTime - currentTime;
