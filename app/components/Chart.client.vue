@@ -7,6 +7,7 @@ import {
   type IChartApi,
   type ISeriesApi,
   type LineData,
+  type WhitespaceData,
   type Time,
   createTextWatermark,
 } from "lightweight-charts";
@@ -20,7 +21,38 @@ const props = defineProps<{
   data: LineData<Time>[];
 }>();
 
-const data = computed(() => props.data);
+const HOUR_IN_SECONDS = 3600;
+
+function fillTimeGaps(data: LineData<Time>[]): (LineData<Time> | WhitespaceData<Time>)[] {
+  if (data.length < 2) return data;
+
+  const result: (LineData<Time> | WhitespaceData<Time>)[] = [];
+  const sorted = [...data].sort((a, b) => (a.time as number) - (b.time as number));
+
+  for (let i = 0; i < sorted.length; i++) {
+    const current = sorted[i];
+    result.push(current);
+
+    if (i < sorted.length - 1) {
+      const next = sorted[i + 1];
+      const currentTime = current.time as number;
+      const nextTime = next.time as number;
+      const gap = nextTime - currentTime;
+
+      if (gap > HOUR_IN_SECONDS * 1.5) {
+        let t = currentTime + HOUR_IN_SECONDS;
+        while (t < nextTime - HOUR_IN_SECONDS / 2) {
+          result.push({ time: t as Time });
+          t += HOUR_IN_SECONDS;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+const data = computed(() => fillTimeGaps(props.data));
 
 async function refresh() {
   const { data } = await useFetch<LineData<Time>[]>("/api/balance");
@@ -79,6 +111,7 @@ onMounted(async () => {
       timeVisible: true,
       secondsVisible: false,
       fixLeftEdge: true,
+      uniformDistribution: false,
     },
   });
 
@@ -118,7 +151,7 @@ onMounted(async () => {
 
   if (data.value) {
     lineSeries.setData(data.value);
-    const lastData = data.value[data.value.length - 1];
+    const lastData = props.data[props.data.length - 1];
     if (lastData) updateLegend(lastData.value, lastData.time);
   }
 
@@ -145,8 +178,8 @@ onMounted(async () => {
       const dataPoint = param.seriesData.get(lineSeries) as LineData<Time> | undefined;
       price = dataPoint?.value;
       time = param.time;
-    } else if (data.value && data.value.length > 0) {
-      const lastData = data.value[data.value.length - 1];
+    } else if (props.data && props.data.length > 0) {
+      const lastData = props.data[props.data.length - 1];
       price = lastData.value;
       time = lastData.time;
     }
@@ -162,8 +195,8 @@ onMounted(async () => {
 });
 
 watch(data, (newData) => {
-  if (newData && newData.length > 0) {
-    const lastData = newData[newData.length - 1];
+  if (props.data && props.data.length > 0) {
+    const lastData = props.data[props.data.length - 1];
     updateLegend(lastData.value, lastData.time);
   }
   if (lineSeries && newData) {
