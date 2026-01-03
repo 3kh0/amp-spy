@@ -2,7 +2,7 @@ import { prisma } from "../../prisma/db";
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const limit = Number(query.limit) || 500;
+  const limit = Number(query.limit) || 1000;
 
   const logs = await prisma.balanceLog.findMany({
     orderBy: { timestamp: "asc" },
