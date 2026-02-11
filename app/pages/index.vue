@@ -10,6 +10,9 @@ const { data } = await useFetch<LineData<Time>[]>("/api/balance");
     <main>
       <Chart ref="chartRef" :data="data || []" />
     </main>
+    <div style="text-align: center; font-size: 0.875rem; color: white; margin-top: 1rem; border: 1px solid #f34e3f; padding: 0.5rem; border-radius: 0.25rem; color: #f34e3f;">
+      Update: HQ has largely shifted over to Claude Code, so we can no longer reliably track the balance. This page will be left up for archival purposes, but it will not be updated anymore.
+    </div>
   </div>
 </template>
 

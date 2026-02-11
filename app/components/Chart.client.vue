@@ -222,7 +222,7 @@ defineExpose({ refresh });
       <div ref="chartContainer" id="x" class="x" />
       <div ref="legendEl" class="l" />
     </div>
-    <p class="f">Times shown are in your local timezone. Data points are recorded in UTC. Data is refreshed 17 minutes into the hour. Open source at <a href="https://github.com/3kh0/amp-spy">3kh0/amp-spy</a>.</p>
+    <p class="f">Times shown are in your local timezone. Data points are recorded in UTC. Open source at <a href="https://github.com/3kh0/amp-spy">3kh0/amp-spy</a>.</p>
   </div>
 </template>
 
